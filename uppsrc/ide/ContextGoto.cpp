@@ -179,7 +179,6 @@ void Ide::ContextGoto0(int pos)
 	String name;
 	Point  ref_pos;
 	String ref_id = GetRefId(pos, name, ref_pos);
-	DDUMP(ref_id);
 	GotoId(ref_id, name, ref_pos, li);
 }
 
