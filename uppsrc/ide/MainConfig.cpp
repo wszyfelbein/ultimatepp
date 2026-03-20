@@ -313,7 +313,7 @@ MainConfigDlg::MainConfigDlg(const Workspace& wspc_) : wspc(wspc_) {
 
 bool MainConfigDlg::Perform(const String& startwith) {
 	list.SetCursor(0);
-	list.FindSetCursor(startwith);
+	list.FindSetCursor(startwith, 1);
 	Sync();
 	return Run() == IDOK;
 }
@@ -329,8 +329,8 @@ void Ide::MainConfig() {
 	actual.config = clone(dlg.config);
 	SavePackage();
 	if(dlg.list.IsCursor()) {
-		mainconfigparam = dlg.list.Get(0);
-		mainconfigname = Nvl((String)dlg.list.Get(1), mainconfigparam);
+		mainconfigparam = dlg.list.Get(1);
+		mainconfigname = Nvl((String)dlg.list.Get(2), mainconfigparam);
 		MakeTitle();
 	}
 	SyncMainConfigList();
