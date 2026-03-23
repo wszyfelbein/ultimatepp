@@ -27,7 +27,7 @@ topic "Roadmap";
 [{_} 
 [s2;%% Release history&]
 [s3;%% 2026.1 (rev. 18468) (March 2026)&]
-[s5;%% [*/ Upcoming release]&]
+[s5;%% [*/ Current stable release]&]
 [s0; &]
 [s0; [* Core]&]
 [s0; &]
@@ -155,7 +155,6 @@ versions of KDE in Xwayland mode `- while inconclusive, it looks
 like KDE/Xwayland problem.&]
 [s5;%% &]
 [s3;%% 2025.1.1 (rev. 17810) (July 2025)&]
-[s5;%% [*/ Current stable release]&]
 [s5;*/%% &]
 [s5;%% This is the first hotfix for the 2025.1 release. We highly 
 recommend all users install this version, especially those running 
