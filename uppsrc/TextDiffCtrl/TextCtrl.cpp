@@ -321,14 +321,26 @@ void TextCompareCtrl::ScrollBarItems::Paint(Draw& w)
 void TextCompareCtrl::PaintScrollBarItems(Draw& w)
 {
 	Rect sr = scroll.y.GetSliderRect();
-	for(int pass = 0; pass < 2; pass++) {
-		Size isz = pass ? DiffImg::dot1().GetSize() : DiffImg::dot().GetSize();
-		for(int i = 0; i < lines.GetCount(); i++)
-			if(lines[i].level > 1)
-				w.DrawImage(sr.CenterPoint().x - isz.cx / 2,
-				            sr.top + scroll.y.GetSliderPos(i) - isz.cy / 2,
-				            pass ? DiffImg::dot1() : DiffImg::dot());
+	Size sz = sr.GetSize();
+	if(scrollbar_items_dirty || scrollbar_items.GetSize() != sz) {
+		ImagePainter p(sz);
+		p.Clear();
+		for(int pass = 0; pass < 2; pass++) {
+			Size isz = pass ? DiffImg::dot1().GetSize() : DiffImg::dot().GetSize();
+			int py = Null;
+			for(int i = 0; i < lines.GetCount(); i++)
+				if(lines[i].level > 1) {
+					int y = scroll.y.GetSliderPos(i) - sr.top - isz.cy / 2;
+					if(py != y) {
+						p.DrawImage(sz.cx / 2 - isz.cx / 2, y, pass ? DiffImg::dot1() : DiffImg::dot());
+						py = y;
+					}
+				}
+		}
+		scrollbar_items = p;
+		scrollbar_items_dirty = false;
 	}
+	w.DrawImage(sr.left, sr.top, scrollbar_items);
 }
 
 void TextCompareCtrl::Paint(Draw& draw)
@@ -595,6 +607,7 @@ void TextCompareCtrl::Layout()
 	if(blame.GetCount())
 		n_width += Zx(8 * 40);
 	scroll.Set(scroll, (scroll.GetReducedViewSize() - Size(n_width, 0)) / letter, Size(maxwidth, lines.GetCount()));
+	scrollbar_items_dirty = true;
 	Refresh();
 }
 
@@ -644,6 +657,7 @@ void TextCompareCtrl::Set(int line, String text, bool diff, int number, int leve
 		maxwidth = tl;
 		Layout();
 	}
+	scrollbar_items_dirty = true;
 }
 
 void TextCompareCtrl::SelfScroll()

@@ -98,6 +98,8 @@ private:
 	bool           show_diff_highlight;
 	bool           change_paper_color;
 	bool           left = false;
+	bool           scrollbar_items_dirty = true;
+	Image          scrollbar_items;
 	
 	struct ScrollBarItems : Ctrl {
 		TextCompareCtrl& diff;
