@@ -292,7 +292,7 @@ bool TextCompareCtrl::LineDiff(Vector<LineEdit::Highlight>& hln, Color eq_color,
 				}
 			}
 		}
-	
+
 	if(matchlen > 1) {
 		for(int i = 0; i < matchlen; i++)
 			hln[p1 + i].paper = eq_color;
@@ -303,6 +303,7 @@ bool TextCompareCtrl::LineDiff(Vector<LineEdit::Highlight>& hln, Color eq_color,
 		}
 		return true;
 	}
+
 	return false;
 }
 
@@ -484,7 +485,7 @@ void TextCompareCtrl::Paint(Draw& draw)
 			if(show_diff_highlight) {
 				WString ln_diff = l.text_diff.ToWString();
 				ln_diff = ExpandTabs(ln_diff);
-				if((int64)ln_diff.GetCount() * ln.GetCount() < 50000) {
+				if((int64)ln_diff.GetCount() * ln.GetCount() < 1000000) {
 					int l1 = 0;
 					int l2 = 0;
 					while(l1 < ln.GetCount() && findarg(ln[l1], ' ', '\t') >= 0)
