@@ -485,18 +485,16 @@ void TextCompareCtrl::Paint(Draw& draw)
 			if(show_diff_highlight) {
 				WString ln_diff = l.text_diff.ToWString();
 				ln_diff = ExpandTabs(ln_diff);
-				if((int64)ln_diff.GetCount() * ln.GetCount() < 1000000) {
-					int l1 = 0;
-					int l2 = 0;
-					while(l1 < ln.GetCount() && findarg(ln[l1], ' ', '\t') >= 0)
-						l1++;
-					while(l2 < ln_diff.GetCount() && findarg(ln_diff[l2], ' ', '\t') >= 0)
-						l2++;
-					ldiff = LineDiff(hln, paper_color, ~ln, l1, ln.GetCount(), ~ln_diff, l2, ln_diff.GetCount(), 0);
-					if(ldiff && DirDiffDlg::GetIgnoreIndentation(this))
-						for(int i = 0; i < l1; i++)
-							hln[i].paper = paper_color;
-				}
+				int l1 = 0;
+				int l2 = 0;
+				while(l1 < ln.GetCount() && findarg(ln[l1], ' ', '\t') >= 0)
+					l1++;
+				while(l2 < ln_diff.GetCount() && findarg(ln_diff[l2], ' ', '\t') >= 0)
+					l2++;
+				ldiff = LineDiff(hln, paper_color, ~ln, l1, min(ln.GetCount(), 1000), ~ln_diff, l2, min(ln_diff.GetCount(), 1000), 0);
+				if(ldiff && DirDiffDlg::GetIgnoreIndentation(this))
+					for(int i = 0; i < l1; i++)
+						hln[i].paper = paper_color;
 			}
 			if(show_white_space) {
 				for(int i = ln.GetCount(); i >= 0; --i) {
