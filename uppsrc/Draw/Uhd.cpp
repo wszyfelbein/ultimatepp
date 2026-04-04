@@ -102,16 +102,48 @@ Image Upscale2x(const Image& src)
 	return Image(h);
 }
 
-Image Downscale2x(const Image& src)
+Image DPIRescale(const Image& src, Size sz)
 {
 	if(IsNull(src))
 		return src;
-	Size s2 = src.Get2ndSpot(); // see above...
-	Image m = RescaleFilter(src, src.GetSize() / 2, s2.cx > 0 || s2.cy > 0 ? FILTER_BILINEAR : FILTER_LANCZOS3);
+	Size s2 = src.Get2ndSpot();
+	Size sz0 = src.GetSize();
+	if(sz0 == sz)
+		return src;
+	// When 2nd spot is defined, it is likely Chameleon rescaling item (e.g. button)
+	// in that case, filtering by smarter rescale methods could lead to artifacts (stay BILINEAR)
+	Image m = RescaleFilter(src, sz, s2.cx > 0 || s2.cy > 0 ? FILTER_BILINEAR : FILTER_LANCZOS3);
 	ImageBuffer h(m);
-	h.SetHotSpot(s2 / 2);
-	h.Set2ndSpot(src.Get2ndSpot() / 2);
+	h.SetHotSpot(s2 * sz / sz0);
+	h.Set2ndSpot(src.Get2ndSpot() * sz / sz0);
 	return Image(h);
+}
+
+Image DPISmartRescale(const Image& src, Size sz)
+{
+	Image m = src;
+	for(;;) {
+		Size isz = m.GetSize();
+		if(isz.cx * isz.cy == 0)
+			return Null;
+		if(isz.cx >= sz.cx && isz.cy >= sz.cy)
+			break;
+		m = Upscale2x(m);
+	}
+	return DPIRescale(m, sz);
+}
+
+Image DPISmartRescaleCached(const Image& src, Size sz)
+{
+	return MakeImage(
+		[&] { StringBuffer s; RawCat(s, src.GetSerialId()); RawCat(s, sz); return (String)s; },
+		[&] { return DPISmartRescale(src, sz); }
+	);
+}
+
+Image Downscale2x(const Image& src)
+{
+	return DPIRescale(src, src.GetSize() / 2);
 }
 
 Image Downscale6x(const Image& src)
@@ -126,31 +158,34 @@ Image Downscale6x(const Image& src)
 	return Image(h);
 }
 
-static bool sUHDMode;
+int    DPIScaleGlobal_;
+double DPIScaleGlobalF_;
 
-void SetUHDMode(bool b)
+void SetDPIScale(int scale)
 {
 	Iml::ResetAll();
-	sUHDMode = b;
+	DPIScaleGlobal_ = scale;
+	DPIScaleGlobalF_ = 0.5 * scale;
 }
 
-bool IsUHDMode()
+int  GetDPIScale()
 {
-	return sUHDMode;
+	return DPIScaleGlobal_;
 }
 
-void SyncUHDMode()
+double GetDPIScaleRatio()
 {
-	bool uhd = GetStdFontCy() > 24;
-	if(uhd != IsUHDMode())
-		SetUHDMode(uhd);
+	return DPIScaleGlobalF_;
 }
 
-Image DPI(const Image& img, int expected)
+void SyncDPIScale()
 {
-	if(img.GetSize().cy <= expected && IsUHDMode())
-		return AdjustImage(img, Upscale2x);
-	return img;
+	int fcy = GetStdFontCy();
+	int scale = clamp((fcy + 3) / 8, 2, 5);
+	if(scale == 5)
+		scale = DPI_300;
+	if(scale != GetDPIScale())
+		SetDPIScale(scale);
 }
 
 };

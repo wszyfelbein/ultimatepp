@@ -29,7 +29,7 @@ void IconShow::Paint(Draw& w)
 			if(flags & IML_IMAGE_FLAG_UHD) {
 				isz.cx += isz.cx + gap;
 				isz.cy += (isz.cy + 1) / 2 + gap;
-				if(IsUHDMode())
+				if(GetDPIScale() >= DPI_200)
 					isz.cy += msz.cy + gap;
 			}
 			else {
@@ -53,7 +53,7 @@ void IconShow::Paint(Draw& w)
 			if(flags & IML_IMAGE_FLAG_UHD) {
 				s2 = Downscale2x(image);
 				s2dk = Downscale2x(DarkTheme(image));
-				if(IsUHDMode()) {
+				if(GetDPIScale() >= DPI_200) {
 					s22 = Magnify(s2, 2, 2, true);
 					s2dk2 = Magnify(s2dk, 2, 2, true);
 				}
@@ -81,7 +81,7 @@ void IconShow::Paint(Draw& w)
 					pos.y += msz.cy + gap;
 					w.DrawImage(pos.x, pos.y, s2);
 					w.DrawImage(x2, pos.y, s2dk);
-					if((flags & IML_IMAGE_FLAG_UHD) && IsUHDMode()) {
+					if((flags & IML_IMAGE_FLAG_UHD) && GetDPIScale() >= DPI_200) {
 						pos.y += (msz.cy + 1) / 2 + gap;
 						w.DrawImage(pos.x, pos.y, s22);
 						w.DrawImage(x2, pos.y, s2dk2);
