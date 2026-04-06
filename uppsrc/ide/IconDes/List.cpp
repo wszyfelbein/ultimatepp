@@ -71,8 +71,9 @@ void IconDes::PlaceDlg(TopWindow& dlg)
 void IconDes::PrepareImageDlg(WithImageLayout<TopWindow>& dlg)
 {
 	CtrlLayoutOKCancel(dlg, "New image");
-	dlg.cx <<= 16;
-	dlg.cy <<= 16;
+	dlg.cx <<= 96;
+	dlg.cy <<= 96;
+	dlg.scale <<= 0;
 	if(IsCurrent()) {
 		Size sz = GetImageSize();
 		dlg.cx <<= sz.cx;

@@ -248,7 +248,7 @@ bool LoadIml(const String& data, Array<ImlImage>& img, int& format)
 				ImlImage& c = img.Add();
 				(ImageIml &)c = m[i];
 				if(version == 0)
-					c.flags &= IML_IMAGE_FLAG_QHD;
+					c.flags &= ~IML_IMAGE_FLAG_QHD;
 				c.name = name[ii];
 				c.exp = exp[ii++];
 				c.name.TrimEnd("__DARK");

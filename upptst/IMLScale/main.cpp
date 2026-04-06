@@ -19,6 +19,9 @@ void MyApp::Paint(Draw& w)
 	w.DrawRect(GetSize(), White());
 	w.DrawImage(100, 100, TestImg::Test());
 	w.DrawImage(500, 100, TestImg::Master());
+
+	w.DrawImage(100, 200, CtrlImg::Diskette());
+	DDUMP(CtrlImg::Diskette().GetSize());
 }
 
 GUI_APP_MAIN
