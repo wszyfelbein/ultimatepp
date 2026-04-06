@@ -31,11 +31,7 @@ void IconShow::Paint(Draw& w)
 		return DPISmartRescale(image, scale * image.GetSize() / image_scale);
 	};
 	
-	Size sz100 = GetSize(DPI_100);
-	Size sz150 = GetSize(DPI_150);
-	Size sz200 = GetSize(DPI_200);
 	Size sz300 = GetSize(DPI_300);
-	
 	if(sz300.cx * sz300.cy > 20000) {
 		w.DrawRect(sz, SColorPaper);
 		w.DrawImage(DPI(5), DPI(5), image);
