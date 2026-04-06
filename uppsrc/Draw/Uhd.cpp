@@ -160,22 +160,14 @@ Image Downscale6x(const Image& src)
 
 int    DPIScaleGlobal_;
 double DPIScaleGlobalF_;
+double IDPIScaleGlobalF_;
 
 void SetDPIScale(int scale)
 {
 	Iml::ResetAll();
 	DPIScaleGlobal_ = scale;
 	DPIScaleGlobalF_ = 0.5 * scale;
-}
-
-int  GetDPIScale()
-{
-	return DPIScaleGlobal_;
-}
-
-double GetDPIScaleRatio()
-{
-	return DPIScaleGlobalF_;
+	IDPIScaleGlobalF_ = 1 / DPIScaleGlobalF_;
 }
 
 void SyncDPIScale()

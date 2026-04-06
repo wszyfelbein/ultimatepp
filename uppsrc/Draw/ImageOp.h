@@ -278,15 +278,17 @@ enum {
 };
 
 void   SetDPIScale(int scale);
-int    GetDPIScale();
-double GetDPIScaleRatio();
 void   SyncDPIScale();
 
-inline int DPI(int a)       { extern int    DPIScaleGlobal_; return (DPIScaleGlobal_ * a) >> 1; }
-inline double DPI(double a) { extern double DPIScaleGlobalF_; return DPIScaleGlobalF_ * a; }
+inline int    GetDPIScale()         { extern int    DPIScaleGlobal_; return DPIScaleGlobal_; }
+inline double GetDPIScaleRatio()    { extern double DPIScaleGlobalF_; return DPIScaleGlobalF_; }
+inline double GetDPIUnScaleRatio()  { extern double IDPIScaleGlobalF_; return IDPIScaleGlobalF_; }
 
-inline Size   DPI(int cx, int cy) { return Size(DPI(cx), DPI(cy)); }
-inline Size   DPI(Size sz)        { return DPI(sz.cx, sz.cy); }
+inline int DPI(int a)               { return (GetDPIScale() * a) >> 1; }
+inline double DPI(double a)         { return GetDPIScaleRatio() * a; }
+
+inline Size   DPI(int cx, int cy)   { return Size(DPI(cx), DPI(cy)); }
+inline Size   DPI(Size sz)          { return DPI(sz.cx, sz.cy); }
 
 int ImlFlagsToDPIScale(int imlflags);
 int DPIScaleToImlFlags(int dpiscale);
