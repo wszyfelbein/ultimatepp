@@ -12,8 +12,9 @@ void SystemDraw::Init(void *cgContext, void *view)
 	CGContextSetBlendMode(cgHandle, kCGBlendModeNormal);
 	CGContextSetTextPosition(cgHandle, 0, 0);
     CGContextSetTextDrawingMode(cgHandle, kCGTextFill);
-	if(IsUHDMode())
-		CGContextScaleCTM(cgHandle, 0.5, 0.5);
+	double sc = Ctrl::GetDisplayUnScale();
+	if(sc != 1)
+		CGContextScaleCTM(cgHandle, sc, sc);
 }
 
 SystemDraw::SystemDraw(void *cgContext, void *nsview)
