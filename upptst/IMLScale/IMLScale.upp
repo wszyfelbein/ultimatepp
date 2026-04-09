@@ -2,9 +2,7 @@ uses
 	CtrlLib;
 
 file
-	a.iml,
 	test.iml,
-	Ctrl.iml,
 	main.cpp;
 
 mainconfig
