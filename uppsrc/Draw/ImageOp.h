@@ -262,9 +262,6 @@ Image MinifyCached(const Image& img, int nx, int ny, bool co = false);
 Image  DownSample3x(const Image& src, bool co = false);
 Image  DownSample2x(const Image& src, bool co = false);
 
-Image DPISmartRescale(const Image& src, Size sz);
-Image DPISmartRescaleCached(const Image& src, Size sz);
-
 Image Upscale2x(const Image& src);
 Image Downscale2x(const Image& src);
 Image Downscale6x(const Image& src);
@@ -290,15 +287,16 @@ inline double DPI(double a)         { return GetDPIScaleRatio() * a; }
 inline Size   DPI(int cx, int cy)   { return Size(DPI(cx), DPI(cy)); }
 inline Size   DPI(Size sz)          { return DPI(sz.cx, sz.cy); }
 
+Image DPISmartRescale(const Image& src, Size sz);
+Image DPISmartRescaleCached(const Image& src, Size sz);
+
 int ImlFlagsToDPIScale(int imlflags);
 int DPIScaleToImlFlags(int dpiscale);
-
 
 inline int DPI2(int dpi200val, int dpi100val) {
 	int scale = GetDPIScale();
 	return (dpi200val - dpi100val) * (scale - DPI_100) / 2 + dpi100val;
 }
-
 
 struct RGBAV {
 	dword r, g, b, a;
