@@ -116,6 +116,7 @@ String GetImageSrc(ImageFn img)
 		q = il.GetCount();
 		il.Add(img);
 		PNGEncoder png;
+		(*img)();
 		png.SaveFile(AppendFileName(targetdir, ImgName(q)),(*img)());
 	}
 	return ImgName(q);
