@@ -81,7 +81,6 @@ class ImageBuffer : NoCopy {
 	void         InitAttrs();
 
 	friend class Image;
-	friend void  iml_ReplaceAll(Image& tgt, const Image& src);
 
 public:
 	void  SetKind(int k)                { kind = k; }
@@ -180,7 +179,7 @@ private:
 	friend struct scImageMaker;
 
 	void         SetAuxData(uint64 data);
-	friend void  iml_ReplaceAll(Image& tgt, const Image& src);
+	friend void  iml_ReplaceAll(Image& tgt, Image& src);
 
 public:
 	Size   GetSize() const                     { return data ? data->buffer.GetSize() : Size(0, 0); }
@@ -276,37 +275,41 @@ Vector<ImageIml> UnpackImlData(const void *ptr, int len);
 Vector<ImageIml> UnpackImlData(const String& d);
 
 enum {
+	GUI_MODE_NORMAL   = 0,
+	GUI_MODE_DARK     = 1,
+	GUI_MODE_UHD      = 2,
+	GUI_MODE_DARK_UHD = 3,
+};
+
+enum {
 	IML_IMAGE_FLAG_FIXED        = 0x1,
 	IML_IMAGE_FLAG_FIXED_COLORS = 0x2,
 	IML_IMAGE_FLAG_FIXED_SIZE   = 0x4,
 	IML_IMAGE_FLAG_UHD          = 0x8,
 	IML_IMAGE_FLAG_DARK         = 0x10,
 	IML_IMAGE_FLAG_S3           = 0x20,
-	IML_IMAGE_FLAG_QHD          = 0x40,
 };
 
-Image MakeImlImage(const String& id, Event<int, ImageIml&, String&> GetRaw);
+Image MakeImlImage(const String& id, Function<ImageIml (int, const String&)> GetRaw, dword global_flags);
 
 class Iml {
 	struct IImage : Moveable<IImage> {
 		std::atomic<bool>  loaded;
 		Image              image;
 
-		IImage()           { loaded = false; }
+		IImage() { loaded = false; }
 	};
 	struct Data : Moveable<Data> {
 		const char *data;
 		int   len, count;
 	};
-	Vector<Data> data;
+	Vector<Data> data[4]; // 0 normal, 1 HiDPI - HD, 2 DK - Dark, 3 HDK - HiDPI + dark
+	VectorMap<String, IImage> map;
 	const char **name;
 	dword global_flags = 0;
 	bool  premultiply;
 
-	VectorMap<String, IImage> map;
-	Index<String>             id;
-	
-	int                       version = 0;
+	Index<String> ex_name[3]; // 0 HiDPI - HD, 1 DK - Dark, 2 HDK - HiDPI + dark
 
 	void  Init(int n);
 
@@ -319,15 +322,15 @@ public:
 	int    Find(const String& id) const      { return map.Find(id); }
 	void   Set(int i, const Image& img);
 
-	ImageIml GetRaw(int i);
+	ImageIml GetRaw(int mode, int i); // tries to get image for mode, can return Null
+	ImageIml GetRaw(int mode, const String& id); // tries to get image for mode by id, can return Null
 
 // these methods serve for .iml import
 	Iml(const char **name, int n);//Deprecated - legacy .iml
-	void AddData(const byte *data, int len, int count);
+	void AddData(const byte *data, int len, int count, int mode = 0);
 	void AddId(int mode1, const char *name);
 	void Premultiplied()                   { premultiply = false; }
 	void GlobalFlag(dword f)               { global_flags |= f; }
-	void Version(int v)                    { version = v; }
 	
 	static void ResetAll(); // clears all .iml caches
 	static void SkinAll(); // reskins all .iml caches

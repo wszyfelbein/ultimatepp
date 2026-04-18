@@ -46,8 +46,9 @@ void AlphaImageInfo::Serialize(Stream& stream)
 		stream % size % hotspot % encoding;
 }
 
-void ScanIML(CParser& parser, Array<ImlImage>& out_images, VectorMap<String, String>& out_settings)
-{ // This is for backward compatibility with the very old iml format
+void ScanIML(CParser& parser, Array<ImlImage>& out_images,
+             VectorMap<String, String>& out_settings)
+{
 	String name, bid;
 	bool exp = false;
 	while(!parser.IsEof())
@@ -188,12 +189,6 @@ bool LoadIml(const String& data, Array<ImlImage>& img, int& format)
 	format = 0;
 	try {
 		bool premultiply = !p.Id("PREMULTIPLIED");
-		int version = 0;
-		if(p.Id("VERSION")) {
-			p.Char('(');
-			version = p.ReadNumber();
-			p.Char(')');
-		}
 		Vector<String> name;
 		Vector<bool> exp;
 		while(p.Id("IMAGE_ID")) {
@@ -247,19 +242,10 @@ bool LoadIml(const String& data, Array<ImlImage>& img, int& format)
 			for(int i = 0; i < count; i++) {
 				ImlImage& c = img.Add();
 				(ImageIml &)c = m[i];
-				if(version == 0)
-					c.flags &= ~IML_IMAGE_FLAG_QHD;
 				c.name = name[ii];
 				c.exp = exp[ii++];
 				c.name.TrimEnd("__DARK");
 				c.name.TrimEnd("__UHD");
-				c.name.TrimEnd("__100");
-				c.name.TrimEnd("__150");
-				c.name.TrimEnd("__200");
-				c.name.TrimEnd("__250");
-				c.name.TrimEnd("__300");
-				c.name.TrimEnd("__350");
-				c.name.TrimEnd("__600");
 				if(premultiply)
 					c.image = Premultiply(c.image);
 			}
@@ -286,16 +272,16 @@ bool LoadIml(const String& data, Array<ImlImage>& img, int& format)
 String SaveIml(const Array<ImlImage>& iml, int format, const String& eol) {
 	StringStream out;
 	out << "PREMULTIPLIED" << eol;
-	out << "VERSION(20260403)" << eol;
+	Index<String> names;
 	Index<String> saved_names;
 	for(int i = 0; i < iml.GetCount(); i++) {
 		const ImlImage& c = iml[i];
+		names.FindAdd(c.name);
 		out << "IMAGE_ID(" << c.name;
-		int scale = ImlFlagsToDPIScale(c.flags);
-		if(saved_names.Find(c.name) < 0)
+		if((c.flags & (IML_IMAGE_FLAG_UHD|IML_IMAGE_FLAG_DARK)) == 0)
 			saved_names.FindAdd(c.name);
-		else
-			out << "__" << AsString(scale * 50);
+		if(c.flags & IML_IMAGE_FLAG_UHD)
+			out << "__UHD";
 		if(c.flags & IML_IMAGE_FLAG_DARK)
 			out << "__DARK";
 		out << ")";
@@ -303,6 +289,10 @@ String SaveIml(const Array<ImlImage>& iml, int format, const String& eol) {
 			out << " IMAGE_META(\"exp\", \"\")";
 		out << eol;
 	}
+
+	for(String id : names) // allow UHD versions to be downscaled
+		if(saved_names.Find(id) < 0)
+			out << "IMAGE_ID(" << id << ")" << eol;
 
 	int ii = 0;
 	while(ii < iml.GetCount()) {

@@ -13,10 +13,12 @@ String IconDes::FormatImageName(const Slot& c)
 		if(c.flags & IML_IMAGE_FLAG_FIXED_SIZE)
 			r << " Sz";
 	}
-	
-	int scale = ImlFlagsToDPIScale(c.flags);
-	r << decode(scale, DPI_100, " 100%", DPI_150, " 150%", DPI_200, " 200%", DPI_300, " 300%", "");
-
+	if(c.flags & IML_IMAGE_FLAG_UHD)
+		r << " HD";
+	if(c.flags & IML_IMAGE_FLAG_DARK)
+		r << " Dk";
+	if(c.flags & IML_IMAGE_FLAG_S3)
+		r << " S3";
 	if(c.exp)
 		r << " X";
 	return r;
@@ -71,9 +73,8 @@ void IconDes::PlaceDlg(TopWindow& dlg)
 void IconDes::PrepareImageDlg(WithImageLayout<TopWindow>& dlg)
 {
 	CtrlLayoutOKCancel(dlg, "New image");
-	dlg.cx <<= 96;
-	dlg.cy <<= 96;
-	dlg.scale <<= 0;
+	dlg.cx <<= 16;
+	dlg.cy <<= 16;
 	if(IsCurrent()) {
 		Size sz = GetImageSize();
 		dlg.cx <<= sz.cx;
@@ -83,11 +84,11 @@ void IconDes::PrepareImageDlg(WithImageLayout<TopWindow>& dlg)
 		dlg.fixed <<= !!(flags & IML_IMAGE_FLAG_FIXED);
 		dlg.fixed_colors <<= !!(flags & IML_IMAGE_FLAG_FIXED_COLORS);
 		dlg.fixed_size <<= !!(flags & IML_IMAGE_FLAG_FIXED_SIZE);
-
+		
+		dlg.uhd <<= !!(flags & IML_IMAGE_FLAG_UHD);
 		dlg.dark <<= !!(flags & IML_IMAGE_FLAG_DARK);
 		
-		int scale = ImlFlagsToDPIScale(flags);
-		dlg.scale = decode(scale, DPI_100, 1, DPI_150, 2, DPI_200, 3, DPI_300, 4, 0);
+		dlg.s3 <<= !!(flags & IML_IMAGE_FLAG_S3);
 		
 		for(Ctrl& q : dlg)
 			if(dynamic_cast<Option *>(&q))
@@ -112,9 +113,12 @@ dword IconDes::GetFlags(WithImageLayout<TopWindow>& dlg)
 		flags |= IML_IMAGE_FLAG_FIXED_COLORS;
 	if(dlg.fixed_size)
 		flags |= IML_IMAGE_FLAG_FIXED_SIZE;
+	if(dlg.uhd)
+		flags |= IML_IMAGE_FLAG_UHD;
 	if(dlg.dark)
 		flags |= IML_IMAGE_FLAG_DARK;
-	flags |= DPIScaleToImlFlags(get_i((int)~dlg.scale, DPI_600, DPI_100, DPI_150, DPI_200, DPI_300));
+	if(dlg.s3)
+		flags |= IML_IMAGE_FLAG_S3;
 	return flags;
 }
 

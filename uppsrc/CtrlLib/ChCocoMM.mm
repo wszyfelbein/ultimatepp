@@ -17,9 +17,8 @@ void Coco_PaintCh(void *cgcontext, int type, int value, int state)
 {
 	auto dopaint = [&] {
 		auto cg = (CGContextRef) cgcontext;
-		double sc = Upp::Ctrl::GetDisplayScale();
-		if(sc != 1)
-			CGContextScaleCTM(cg, sc, sc);
+		if(Upp::IsUHDMode())
+			CGContextScaleCTM(cg, 2, 2);
 		CGRect cr = CGRectMake(0, 0, 140, 140);
 		if(type == COCO_NSCOLOR) {
 			CGContextSaveGState(cg);

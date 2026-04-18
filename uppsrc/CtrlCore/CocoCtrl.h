@@ -6,12 +6,8 @@ private:
 	static Ptr<Ctrl> lastActive;
 	
 	static bool      always_use_bundled_icon;
-
-	static double    display_scale;
-	static double    display_unscale;
 	
 	friend void CocoInit(int argc, const char **argv, const char **envptr);
-	friend void Coco_PaintCh(void *cgcontext, int type, int value, int state);
 	
 protected:
 	virtual void MMClose() {}
@@ -37,5 +33,3 @@ public:
 	void   RegisterCocoaDropFormats();
 
 	static Rect GetScreenArea(Point pt);
-	static double GetDisplayScale()       { return display_scale; }
-	static double GetDisplayUnScale()     { return display_unscale; }

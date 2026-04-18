@@ -129,7 +129,7 @@ void Font::SyncStdFont()
 		}
 
 	LLOG("SyncStdFont " << StdFontSize);
-	SyncDPIScale();
+	SyncUHDMode();
 }
 
 void (*whenSetStdFont)();

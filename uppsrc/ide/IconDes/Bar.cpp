@@ -113,6 +113,12 @@ void IconDes::SettingBar(Bar& bar)
 {
 	using namespace IconDesKeys;
 	Slot *c = IsCurrent() ? &Current() : NULL;
+	bar.Add("Show UHD/Dark syntetics", IconDesImg::ShowOther(),
+	        [=] { show_synthetics = !show_synthetics; show_downscaled = false; SyncShow(); SetBar(); })
+	   .Check(show_synthetics);
+	bar.Add("Show downscaled", IconDesImg::ShowSmall(),
+	        [=] { show_downscaled = !show_downscaled; show_synthetics = false; SyncShow(); SetBar(); })
+	   .Check(show_downscaled);
 	bar.Add("Show secondary grid", IconDesImg::grid2(),
 	        [=] { show_grid2 = !show_grid2; Refresh(); SetBar(); })
 	   .Check(show_grid2);
@@ -334,14 +340,14 @@ void IconDes::SerializeSettings(Stream& s)
 	SetBar();
 	if(version >= 2)
 		s % ImgFile();
-	bool b = false;
 	if(version >= 3) {
-		s % b;
+		bool b = false;
+		s % b % show_downscaled;
 	}
 	if(version >= 4)
 		s % paste_mode;
 	if(version >= 5)
-		s % b;
+		s % show_synthetics;
 	if(version >= 6)
 		s % show_grid2;
 	if(version >= 7)

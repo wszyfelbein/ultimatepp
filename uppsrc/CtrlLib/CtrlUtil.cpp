@@ -473,11 +473,10 @@ struct ZoomIconMaker : ImageMaker {
 		ImagePainter w(sz);
 		w.Clear(RGBAZero());
 		w.Move(DPI(11), DPI(11)).Line(DPI(16), DPI(16)).Stroke(DPI(2), SBlack());
-		int scale = GetDPIScale();
-		w.Circle(DPI(7), DPI(7), scale > DPI_100 ? scale * 3 : 6.5).Stroke(scale - 1, SBlack());
+		w.Circle(DPI(7), DPI(7), IsUHDMode() ? 12 : 6.5).Stroke(IsUHDMode() ? 3 : 1, SBlack());
 		String txt = AsString(int(zoom * 100));
-		Image numbers = scale >= DPI_200 ? CtrlImg::Numbers2() : CtrlImg::Numbers1();
-		int gcx = 3 + scale / 2;
+		Image numbers = IsUHDMode() ? CtrlImg::Numbers2() : CtrlImg::Numbers1();
+		int gcx = IsUHDMode() ? 6 : 4;
 		Size tsz(txt.GetCount() * gcx, numbers.GetHeight());
 		int y = DPI(7) - tsz.cy / 2;
 		int x = DPI(7) - tsz.cx / 2;

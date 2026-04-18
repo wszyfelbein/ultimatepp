@@ -82,10 +82,10 @@ WebSearchTab::WebSearchTab()
 {
 	list.AddColumn("Name", 5);
 	list.AddColumn("URI", 5);
-	if(GetDPIScale() >= DPI_200)
+	if(IsUHDMode())
 		list.AddIndex();
 	list.AddColumn("Icon").SetDisplay(Single<IconDisplay>());
-	if(GetDPIScale() < DPI_200)
+	if(!IsUHDMode())
 		list.AddIndex();
 	list.Moving().RowName("search engine").Removing();
 	list.WhenLeftDouble = [=] { Edit(); };
@@ -243,9 +243,9 @@ void Ide::OnlineSearchMenu(Bar& menu, const String& what, bool accel)
 		Image& m = search_icon.At(i);
 		if(!b) {
 			b = true;
-			m = StreamRaster::LoadStringAny(Decode64(search_engines[i][GetDPIScale() == DPI_100 ? "Icon16" : "Icon32"]));
+			m = StreamRaster::LoadStringAny(Decode64(search_engines[i][IsUHDMode() ? "Icon32" : "Icon16"]));
 		}
-		return DPISmartRescaleCached(m, DPI(16, 16));
+		return m;
 	};
 
 	String name, uri;
