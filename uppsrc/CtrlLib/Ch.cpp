@@ -832,11 +832,11 @@ void ChGraySkin()
 void ChDarkSkin()
 {
 	ChReset();
-	RoundStyleArrows();
 	static int adj[] = { 10, 80, -5, -10 };
 	SColorPaper_Write(Black());
 	SColorHighlight_Write(Gray());
 	SColorHighlightText_Write(White());
+	RoundStyleArrows();
 	ChMakeSkin(3, SWhiteGray(), SWhiteGray(), adj);
 	static int g[] = { 80, 100, 70, 70, 30 };
 	RoundScrollbar(g);
