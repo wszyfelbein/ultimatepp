@@ -16,5 +16,6 @@ file
 	Buffer.hpp,
 	SSL.icpp,
 	Docs readonly separator,
-	src.tpp;
+	src.tpp,
+	Copying;
 
